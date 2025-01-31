@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ver Ticket</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Sistemas Valle de la Paz</h1>
+    </header>
+    
+    <div class="breadcrumb">
+        Soporte Valle de la Paz > Sistemas Valle de la Paz > Iniciar Sesión
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Ver ticket</h2>
+            <form action="consultar_ticket.php" method="post">
+                <label for="id_ticket">ID del Ticket <span class="required">*</span></label>
+                <input type="text" id="id_ticket" name="id_ticket" required>
+                
+                <label for="email">Correo Electrónico <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+                
+                <button type="submit">Ver ticket</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

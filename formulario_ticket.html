@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enviar una Solicitud de Asistencia</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Enviar una Solicitud de Asistencia</h1>
+            <p>Completa los campos requeridos</p>
+        </div>
+        <form id="ticketForm" action="guardar_ticket.php" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="numEmpleado">Número de Empleado <span style="color: red;">*</span></label>
+                <input type="text" id="numEmpleado" name="numEmpleado" required>
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre <span style="color: red;">*</span></label>
+                <input type="text" id="nombre" name="nombre" readonly>
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail <span style="color: red;">*</span></label>
+                <input type="email" id="email" name="email" required readonly>
+            </div>
+            <div class="form-group">
+                <label for="prioridad">Prioridad</label>
+                <select id="prioridad" name="prioridad">
+                    <option value="baja">Baja</option>
+                    <option value="media">Media</option>
+                    <option value="alta">Alta</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="extension">Extensión</label>
+                <input type="text" id="extension" name="extension" readonly>
+            </div>
+            <div class="form-group">
+                <label for="departamento">Departamento <span style="color: red;">*</span></label>
+                <input type="text" id="departamento" name="departamento" required readonly>
+            </div>
+            <div class="form-group">
+                <label for="asunto">Asunto <span style="color: red;">*</span></label>
+                <select id="asunto" name="asunto" required>
+                    <option value="">Selecciona una opción</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="mensaje">Mensaje <span style="color: red;">*</span></label>
+                <textarea id="mensaje" name="mensaje" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="anydesk">AnyDesk</label>
+                <input type="text" id="anydesk" name="anydesk" readonly>
+            </div>
+            <div class="form-group">
+                <label for="adjuntos">Adjuntos</label>
+                <div class="file-input">
+                    <input type="file" id="adjuntos" name="adjuntos" multiple>
+                    <small>Límite de carga de archivos</small>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Enviar Ticket</button>
+        </form>
+        <div class="footer">
+            Powered by <a href="DAMV" target="_blank">DAMV</a>
+        <!-- Mensaje de éxito o error -->
+        <div id="message" style="margin-top: 20px;"></div>
+    </div>
+
+
+    
+    <script>
+        // Obtener el tipo de ticket desde la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tipoTicket = urlParams.get('tipo');
+
+        // Cargar las opciones de asunto dinámicamente
+        if (tipoTicket) {
+            fetch(`obtener_asuntos.php?tipo=${tipoTicket}`)
+                .then(response => response.json())
+                .then(data => {
+                    const asuntoSelect = document.getElementById('asunto');
+                    data.forEach(asunto => {
+                        const option = document.createElement('option');
+                        option.value = asunto;
+                        option.textContent = asunto;
+                        asuntoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        document.getElementById('ticketForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evitar que el formulario se envíe de forma tradicional
+
+            const formData = new FormData(this); // Obtener los datos del formulario
+
+            fetch('guardar_ticket.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                const messageDiv = document.getElementById('message');
+                if (data.success) {
+                    // Mostrar mensaje de éxito con el ID del ticket
+                    messageDiv.innerHTML = `
+                        <p style="color: green;">${data.message}</p>
+                        <p><strong>ID del Ticket:</strong> ${data.id_ticket}</p>
+                    `;
+                } else {
+                    // Mostrar mensaje de error
+                    messageDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('message').innerHTML = `<p style="color: red;">Error al enviar el ticket.</p>`;
+            });
+        });
+        
+    </script>
+    
+</body>
+</html>
